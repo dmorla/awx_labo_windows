@@ -6,6 +6,6 @@
     - name: Modificar la contrasenya
       win_user:
         name: "david.morla"
-        password: "Tarragona$$1979"
+        password: ""
         update_password: always
         state: present
