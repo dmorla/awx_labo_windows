@@ -1,0 +1,11 @@
+---
+- name: Canviar la contrasenya de l'usuari de domini
+  hosts: winansdc01
+  gather_facts: no
+  tasks:
+    - name: Modificar la contrasenya
+      win_user:
+        name: "david.morla"
+        password: "Tarragona$$1979"
+        update_password: always
+        state: present

@@ -1,0 +1,20 @@
+---
+- hosts: "{{ servidor }}"
+  tasks:
+    - name: validar conexion a apache
+      block:
+        - name: La web responde?
+          win_uri:
+            url: "http://localhost"
+      rescue:
+        - name: Verificar servicio Apache2.2
+          win_service:
+            name: Apache2.2 
+            state: started  
+      always:
+        - name: La web responde?
+          win_uri:
+            url: "http://localhost"
+        - name: Muestro un mensaje
+          debug:
+            msg: "funciono!!!"

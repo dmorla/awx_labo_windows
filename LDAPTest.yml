@@ -1,0 +1,37 @@
+- name: Executar consulta LDAP en Windows via PowerShell
+  hosts: "{{ servidor }}"
+  tasks:
+  - name: Executar script PowerShell per consultar LDAP
+    ansible.windows.win_powershell:
+      script: |
+        $ldapServer = "LDAP://160.118.32.59:389"
+        $baseDN = "cn=a337988,o=people,o=ian,o=ad,o=wiw"
+        $ldapUser = "cn=proxyagent,ou=profile,dc=zib,dc=app"
+        $ldapPassword = "QT%l12rI"
+        $ldapFinalPath = "$($ldapServer)/$($baseDN)" 
+        $ldapConnection = New-Object System.DirectoryServices.DirectoryEntry(
+            $ldapFinalPath,
+            $ldapUser,
+            $ldapPassword,
+            [System.DirectoryServices.AuthenticationTypes]::None
+        )
+
+        $ldapSearcher = New-Object System.DirectoryServices.DirectorySearcher($ldapConnection)
+        $ldapSearcher.Filter = "(sn=dmorla)"
+        $ldapSearcher.PropertiesToLoad.Add("displayname") | Out-Null
+        $ldapSearcher.PropertiesToLoad.Add("cn") | Out-Null
+        $results = $ldapSearcher.FindAll()
+        
+        $output = @()
+        foreach ($entry in $results) {
+            $output += "DN: $($entry.Path)"
+            $output += "sshPublicKey: $($entry.Properties["sshPublicKey"])"
+        }
+
+        # Retornar correctament la sortida perquè Ansible la pugui capturar
+        $output | Out-String
+
+    register: ldap_result
+  - name: Mostrar resultats
+    debug:
+      var: ldap_result.stdout_lines

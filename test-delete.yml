@@ -1,0 +1,15 @@
+---
+- hosts: "{{ servidor }}"
+  tasks:
+  - name: Eliminar carpeta 'NovaCarpeta'
+    ansible.windows.win_file:
+      path: C:\Temp\NovaCarpeta
+      state: absent
+  - name: Eliminar fitxer .ps1
+    ansible.windows.win_file:
+      path: C:\temp\test-powershell-script.ps1
+      state: absent
+  - name: Eliminar usuari del domini
+    win_domain_user:
+      name: "ansible-test-user"
+      state: absent    

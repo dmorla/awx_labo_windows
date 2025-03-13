@@ -1,0 +1,6 @@
+---
+- hosts: "{{ servidor }}"
+  tasks:
+  - name: contenido variable
+    debug:
+      msg: "Valor variable rol: {{ rol }} y valor variable password: {{ password }}"

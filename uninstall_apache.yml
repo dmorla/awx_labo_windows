@@ -1,0 +1,12 @@
+---
+- name: Trobar product_id d'Apache
+  hosts: winansmember01
+  gather_facts: no
+  tasks:
+    - name: Llistar tots els paquets instal·lats
+      win_package_facts:
+
+    - name: Mostrar tots els paquets instal·lats
+      debug:
+        var: ansible_facts.packages
+

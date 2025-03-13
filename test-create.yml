@@ -1,0 +1,34 @@
+---
+- hosts: "{{ servidor }}"
+  tasks:
+  - name: Copiar fitxer al servidor
+    ansible.windows.win_copy:
+      src: /tools/git_repositories/ansible_dmorla/awx_labo_windows/test-powershell-script.ps1
+      dest: C:\temp\test-powershell-script.ps1
+  - name: Executar un script
+    win_command: powershell.exe -ExecutionPolicy ByPass -File C:/temp/test-powershell-script.ps1
+  - name: Crear usuari de domini
+    win_domain_user:
+      Name: ansible-test-user
+      Firstname: Test
+      Surname: Ansible
+      Company: T-Systems
+      Password: P@ssw0rd
+      Description: Usuari de test creat amb Ansible
+      Email: ansible-test-user@t-systems.com
+      account_locked: false
+      password_never_expires: true
+      state: present
+      Groups:
+        - Domain users
+        - GG_TSYS_DEPT_Backup
+      Attributes:
+        msDS-cloudExtensionAttribute10: 123456
+        displayname: Test Ansible
+  - name: Moure usuari
+    win_shell: |
+      Import-Module ActiveDirectory
+      Get-ADUser -Identity "ansible-test-user" | Move-ADObject -TargetPath "OU=TS-Backup,OU=T-Systems,OU=Laboratorio,OU=Usuarios,DC=MWSLabAnsible,DC=com"
+    args:
+      executable: powershell
+

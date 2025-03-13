@@ -1,0 +1,17 @@
+- name: Executar consulta a Oracle
+  hosts: localhost
+  tasks:
+  - name: Executar SQL
+    shell: |
+      echo "SELECT COD_EMPLEADO, COD_CIAM, LOGIN FROM DM_SHARED_DATA.V_EMPLEADOS_AD_TSI_USP;" | sqlplus -s APP_AD_TSI_USP/Ufg_5ggrPPqt4@'(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=10.49.15.100)(PORT=1522))(ADDRESS=(PROTOCOL=TCP)(HOST=10.49.15.102)(PORT=1522)))(CONNECT_DATA=(SERVICE_NAME=PRISMA_TAF)))'
+    register: query_result
+  - name: Mostrar resultats
+    debug:
+      var: query_result.stdout_lines
+  - name: Filtrar resultats
+    set_fact:
+      filtered_results: "{{ query_result.results | selectattr('LOGIN', 'equalto', 'dmorla') | list }}"
+  - name: Guardar resultats en un fitxer JSON
+    copy:
+      content: "{{ filtered_results | to_nice_json }}"
+      dest: "/tools/git_repositories/ansible_dmorla/awx_labo_windows/resultats.json"
